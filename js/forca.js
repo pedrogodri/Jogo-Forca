@@ -1,3 +1,4 @@
+let jogarNovamente = true;
 let tentativas = 6;
 let listaDinamica = [];
 let palavraSecretaCategoria;
@@ -202,7 +203,47 @@ const palavras = [
     palavra050 = {
         nome: "CINZA",
         categoria: "COR"
-    }
+    },
+    palavra051 = {
+        nome: "LARANJA MECANICA",
+        categoria: "FILMES E SÉRIES"
+    },
+    palavra052 = {
+        nome: "STRANGER THINGS",
+        categoria: "FILMES E SÉRIES"
+    },
+    palavra053 = {
+        nome: "BOB ESPONJA",
+        categoria: "FILMES E SÉRIES"
+    },
+    palavra054 = {
+        nome: "BATMAN",
+        categoria: "FILMES E SÉRIES"
+    },
+    palavra055 = {
+        nome: "A ERA DO GELO",
+        categoria: "FILMES E SÉRIES"
+    },
+    palavra056 = {
+        nome: "MORTE NO NILO",
+        categoria: "FILMES E SÉRIES"
+    },
+    palavra057 = {
+        nome: "SONIC",
+        categoria: "FILMES E SÉRIES"
+    },
+    palavra058 = {
+        nome: "THE WALKING DEAD",
+        categoria: "FILMES E SÉRIES"
+    },
+    palavra059 = {
+        nome: "EMILY IN PARIS",
+        categoria: "FILMES E SÉRIES"
+    },
+    palavra060 = {
+        nome: "VINGADORES ULTIMATO",
+        categoria: "FILMES E SÉRIES"
+    },
 ];
 
 criarPalavraSecreta();
@@ -224,11 +265,23 @@ function mostrarPalavraTela() {
 
     for (i = 0; i < palavraSecretaSorteada.length; i++) {
         if (listaDinamica[i] == undefined) {
-            listaDinamica[i] = "&nbsp;";
-            palavraSecreta.innerHTML += "<div class='letras' >" + listaDinamica[i] + "</div>";
+            if (palavraSecretaSorteada[i] == " ") {
+                listaDinamica[i] = " ";
+                palavraSecreta.innerHTML += "<div class='letrasEspaco' >" + listaDinamica[i] + "</div>";
+            }
+            else {
+                listaDinamica[i] = "&nbsp;";
+                palavraSecreta.innerHTML += "<div class='letras' >" + listaDinamica[i] + "</div>";
+            }
         }
         else {
-            palavraSecreta.innerHTML += "<div class='letras' >" + listaDinamica[i] + "</div>";
+            if (palavraSecretaSorteada[i] == " ") {
+                listaDinamica[i] = " ";
+                palavraSecreta.innerHTML += "<div class='letrasEspaco' >" + listaDinamica[i] + "</div>";
+            }
+            else {
+                palavraSecreta.innerHTML += "<div class='letras' >" + listaDinamica[i] + "</div>";
+            }
         }
     }
 }
@@ -236,15 +289,21 @@ function mostrarPalavraTela() {
 function verificarLetraEscolhida(letra) {
     document.getElementById("tecla-" + letra).disabled = true;
     if (tentativas > 0) {
-        mudarStyleLetra("tecla-" + letra);
+        mudarStyleLetra("tecla-" + letra, false);
         compararListas(letra);
         mostrarPalavraTela();
     }
 }
 
-function mudarStyleLetra(tecla) {
-    document.getElementById(tecla).style.background = "#800080";
-    document.getElementById(tecla).style.color = "#ffffff";
+function mudarStyleLetra(tecla, condicao) {
+    if (condicao == false) {
+        document.getElementById(tecla).style.background = "#800080";
+        document.getElementById(tecla).style.color = "#ffffff";
+    } else {
+        document.getElementById(tecla).style.background = "#008000";
+        document.getElementById(tecla).style.color = "#ffffff";
+    }
+
 }
 
 function compararListas(letra) {
@@ -252,11 +311,13 @@ function compararListas(letra) {
     if (posicao < 0) {
         tentativas--;
         carregarImagemForca();
-        if(tentativas == 0) {
+        if (tentativas == 0) {
             abreModal("OPS!", "NÃO FOI DESTA VEZ ... A palavra secreta era <br>" + palavraSecretaSorteada);
+            piscarBotaoJogarNovamente();
         }
     }
     else {
+        mudarStyleLetra("tecla-" + letra, true);
         for (i = 0; i < palavraSecretaSorteada.length; i++) {
             if (palavraSecretaSorteada[i] == letra) {
                 listaDinamica[i] = letra;
@@ -274,7 +335,23 @@ function compararListas(letra) {
     if (vitoria == true) {
         abreModal("PARABÉNS!", "VOCÊ VENCEU...!");
         tentativas = 0;
+        piscarBotaoJogarNovamente();
     }
+}
+
+async function piscarBotaoJogarNovamente() {
+    while (jogarNovamente) {
+        document.getElementById("btn-reiniciar").style.backgroundColor = 'red';
+        document.getElementById("btn-reiniciar").style.scale = 1.3;
+        await atraso(500);
+        document.getElementById("btn-reiniciar").style.backgroundColor = 'yellow';
+        document.getElementById("btn-reiniciar").style.scale = 1;
+        await atraso(500);
+    }
+}
+
+async function atraso(tempo) {
+    return new Promise(x => setTimeout(x, tempo))
 }
 
 function carregarImagemForca() {
@@ -309,13 +386,14 @@ function abreModal(titulo, mensagem) {
 
     let modalBody = document.getElementById("modalBody");
     modalBody.innerHTML = mensagem;
-    
+
     $("#myModal").modal({
-        show : true
+        show: true
     })
 }
 
 let btnReiniciar = document.querySelector("#btn-reiniciar");
-btnReiniciar.addEventListener("click", function() {
+btnReiniciar.addEventListener("click", function () {
+    jogarNovamente = false;
     location.reload();
 });
